@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsyncSocket
 {
@@ -11,9 +8,10 @@ namespace AsyncSocket
     {
         #region ======= FIELDS =======
 
-        private Socket _socket;
+        private Socket _listener;
 
         public readonly int _port;
+        public readonly int _backlog;
 
         #endregion
 
@@ -27,8 +25,8 @@ namespace AsyncSocket
 
         public delegate void OnStartDelegate();
         public delegate void OnStopDelegate();
-        public delegate void OnAcceptDelegate();
-        public delegate void OnErrorDelegate();
+        public delegate void OnAcceptDelegate(AsyncSocketClient client);
+        public delegate void OnErrorDelegate(Exception ex);
 
         public event OnStartDelegate OnStart;
         public event OnStopDelegate OnStop;
@@ -37,15 +35,86 @@ namespace AsyncSocket
 
         #endregion
 
-        #region ======= CONSTRUCTOR =======
+        #region ======= CONSTRUCTORS =======
 
-        public AsyncSocketServer(int port) => _port = port;
+        public AsyncSocketServer(int port, int backlog = 1000)
+        {
+            _port = port;
+            _backlog = backlog;
+        }
 
         #endregion
 
         #region ======= METHODS =======
 
+        public void Listen()
+        {
+            try
+            {
+                _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _listener.Bind(new IPEndPoint(IPAddress.Any, _port));
+                _listener.Listen(_backlog);
 
+                OnStart?.Invoke();
+
+                Accept();
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke(ex);
+            }
+        }
+
+        public void Start() => Listen();
+
+        public void Stop()
+        {
+            if (_listener != null)
+            {
+                try
+                {
+                    if (_listener.IsBound)
+                        _listener.Close();
+
+                    _listener = null;
+
+                    OnStop?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    OnError?.Invoke(ex);
+                }
+            }
+        }
+
+        private void Accept()
+        {
+            try
+            {
+                _listener.BeginAccept(new AsyncCallback(AcceptCallBack), _listener);
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke(ex);
+            }
+        }
+
+        private void AcceptCallBack(IAsyncResult asyncResult)
+        {
+            try
+            {
+                Socket listener = asyncResult.AsyncState as Socket;
+                Socket workSocket = listener.EndAccept(asyncResult);
+
+                OnAccept?.Invoke(new AsyncSocketClient(workSocket));
+
+                Accept();
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke(ex);
+            }
+        }
 
         #endregion
     }
