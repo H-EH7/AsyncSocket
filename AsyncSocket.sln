@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncSocket", "AsyncSocket\AsyncSocket.csproj", "{BC103774-0184-4398-A0A0-84049436D3E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncSocketTest", "AsyncSocketTest\AsyncSocketTest.csproj", "{425C9C97-C2CE-44F1-9B5A-1D49189D1D6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{BC103774-0184-4398-A0A0-84049436D3E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC103774-0184-4398-A0A0-84049436D3E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC103774-0184-4398-A0A0-84049436D3E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{425C9C97-C2CE-44F1-9B5A-1D49189D1D6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{425C9C97-C2CE-44F1-9B5A-1D49189D1D6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{425C9C97-C2CE-44F1-9B5A-1D49189D1D6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{425C9C97-C2CE-44F1-9B5A-1D49189D1D6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

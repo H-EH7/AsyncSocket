@@ -155,6 +155,12 @@ namespace AsyncSocket
 
                 if (receivedSize > 0)
                     OnReceive?.Invoke(receiveObject.Buffer);
+
+                Receive();
+            }
+            catch (ObjectDisposedException ex)
+            {
+                // Receive 중에 Socket 닫혔을 경우
             }
             catch (Exception ex)
             {
@@ -182,6 +188,10 @@ namespace AsyncSocket
                 client.EndSend(asyncResult);
 
                 OnSend?.Invoke();
+            }
+            catch (ObjectDisposedException ex)
+            {
+                // Send 중에 Socket 닫혔을 경우
             }
             catch (Exception ex)
             {
