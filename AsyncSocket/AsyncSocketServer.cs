@@ -12,17 +12,17 @@ namespace AsyncSocket
 
         private Socket _listener;
 
-        private List<AsyncSocketClient> _workClients = new List<AsyncSocketClient>();
-
-        public readonly int _port;
-        public readonly int _backlog;
+        private readonly int _port;
+        private readonly int _backlog;
 
         #endregion
 
         #region ======= PROPERTIES =======
 
+        /// <summary>
+        /// 서버의 리스닝 Port 번호
+        /// </summary>
         public int Port { get => _port; }
-
 
         #endregion
 
@@ -35,17 +35,45 @@ namespace AsyncSocket
         public delegate void OnSendDelegate();
         public delegate void OnErrorDelegate(Exception ex);
 
+        /// <summary>
+        /// 서버 시작 시 발생하는 이벤트
+        /// </summary>
         public event OnStartDelegate OnStart;
+
+        /// <summary>
+        /// 서버 중지 시 발생하는 이벤트
+        /// </summary>
         public event OnStopDelegate OnStop;
+
+        /// <summary>
+        /// Client Accept 시 발생하는 이벤트
+        /// </summary>
         public event OnAcceptDelegate OnAccept;
+
+        /// <summary>
+        /// 데이터 수신 시 발생하는 이벤트
+        /// </summary>
         public event OnReceiveDelegate OnReceive;
+
+        /// <summary>
+        /// 데이터 송신 시 발생하는 이벤트
+        /// </summary>
         public event OnSendDelegate OnSend;
+
+        /// <summary>
+        /// 에러 발생 시 이벤트
+        /// </summary>
         public event OnErrorDelegate OnError;
 
         #endregion
 
         #region ======= CONSTRUCTORS =======
 
+        /// <summary>
+        /// 기본 생성자
+        /// </summary>
+        /// <param name="port">리스닝 Port 번호</param>
+        /// <param name="backlog">연결 대기 큐의 최대 길이 (default: 1000)</param>
         public AsyncSocketServer(int port, int backlog = 1000)
         {
             _port = port;
@@ -56,6 +84,9 @@ namespace AsyncSocket
 
         #region ======= METHODS =======
 
+        /// <summary>
+        /// 서버가 리슨을 시작한다.
+        /// </summary>
         public void Listen()
         {
             try
@@ -74,8 +105,14 @@ namespace AsyncSocket
             }
         }
 
+        /// <summary>
+        /// 서버가 리슨을 시작한다.
+        /// </summary>
         public void Start() => Listen();
 
+        /// <summary>
+        /// 서버를 중지시킨다.
+        /// </summary>
         public void Stop()
         {
             if (_listener != null)
@@ -96,6 +133,11 @@ namespace AsyncSocket
             }
         }
 
+        /// <summary>
+        /// 특정 Client에게 데이터를 송신한다.
+        /// </summary>
+        /// <param name="client">송신할 Client</param>
+        /// <param name="data">송신할 데이터의 Byte 배열</param>
         public void Send(AsyncSocketClient client, byte[] data) => client.Send(data);
 
         private void Accept()
@@ -121,9 +163,6 @@ namespace AsyncSocket
                 workClient.OnReceive += (buffer) => OnReceive?.Invoke(buffer);
                 workClient.OnSend += () => OnSend?.Invoke();
                 workClient.OnError += (ex) => OnError?.Invoke(ex);
-                workClient.OnDisconnect += () => _workClients.Remove(workClient);
-
-                _workClients.Add(workClient);
 
                 workClient.Receive();
 

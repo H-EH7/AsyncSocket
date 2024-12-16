@@ -15,6 +15,9 @@ namespace AsyncSocket
 
         #region ======= PROPERTIES =======
 
+        /// <summary>
+        /// Client의 연결 여부
+        /// </summary>
         public bool IsConnected => _client?.Connected ?? false;
 
         #endregion
@@ -27,21 +30,48 @@ namespace AsyncSocket
         public delegate void OnSendDelegate();
         public delegate void OnErrorDelegate(Exception ex);
 
+        /// <summary>
+        /// 연결 시 발생하는 이벤트
+        /// </summary>
         public event OnConnectDelegate OnConnect;
+
+        /// <summary>
+        /// 연결 해제 시 발생하는 이벤트
+        /// </summary>
         public event OnDisconnectDelegate OnDisconnect;
+
+        /// <summary>
+        /// 데이터 수신 시 발생하는 이벤트
+        /// </summary>
         public event OnReceiveDelegate OnReceive;
+
+        /// <summary>
+        /// 데이터 송신 시 발생하는 이벤트
+        /// </summary>
         public event OnSendDelegate OnSend;
+
+        /// <summary>
+        /// 에러 발생 시 이벤트
+        /// </summary>
         public event OnErrorDelegate OnError;
 
         #endregion
 
         #region ======= CONSTRUCTORS =======
 
+        /// <summary>
+        /// 기본 생성자
+        /// </summary>
+        /// <param name="bufferSize">버퍼 사이즈 (default: 1024)</param>
         public AsyncSocketClient(int bufferSize = 1024)
         {
             _bufferSize = bufferSize;
         }
 
+        /// <summary>
+        /// Socket 주입 생성자
+        /// </summary>
+        /// <param name="client">주입할 Socket</param>
         public AsyncSocketClient(Socket client)
         {
             _client = client;
@@ -52,6 +82,9 @@ namespace AsyncSocket
 
         #region ======= INNER CLASS =======
 
+        /// <summary>
+        /// 데이터 수신 시 State를 저장할 class
+        /// </summary>
         private class ReceiveObject
         {
             public byte[] Buffer { get; }
@@ -68,6 +101,11 @@ namespace AsyncSocket
 
         #region ======= METHODS =======
 
+        /// <summary>
+        /// Socket 연결을 시작한다.
+        /// </summary>
+        /// <param name="host">Host의 IP</param>
+        /// <param name="port">Host의 Port 번호</param>
         public void Connect(string host, int port)
         {
             try
@@ -99,6 +137,9 @@ namespace AsyncSocket
             }
         }
 
+        /// <summary>
+        /// Socket의 연결을 해제한다.
+        /// </summary>
         public void Disconnect()
         {
             try
@@ -130,8 +171,14 @@ namespace AsyncSocket
             }
         }
 
+        /// <summary>
+        /// Socket의 연결을 해제한다.
+        /// </summary>
         public void Close() => Disconnect();
 
+        /// <summary>
+        /// 데이터를 수신한다.
+        /// </summary>
         public void Receive()
         {
             try
@@ -168,6 +215,10 @@ namespace AsyncSocket
             }
         }
 
+        /// <summary>
+        /// 데이터를 송신한다.
+        /// </summary>
+        /// <param name="data">송신할 데이터의 Byte 배열</param>
         public void Send(byte[] data)
         {
             try
